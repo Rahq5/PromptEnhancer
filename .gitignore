@@ -1,1 +1,5 @@
-Logic/venv/
+venv/
+node_modules/
+out/
+*.vsix
+__pycache__/
