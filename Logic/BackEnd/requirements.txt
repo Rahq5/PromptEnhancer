@@ -1,0 +1,10 @@
+# Runtime dependencies for the prompt-enhancement backend.
+# Install with: python -m pip install -r requirements.txt
+
+transformers==5.23.0
+torch==2.15.0
+
+# For a much smaller CPU-only install (~200 MB instead of ~5 GB), replace the
+# torch line above with these two lines:
+# --extra-index-url https://download.pytorch.org/whl/cpu
+# torch==2.15.0+cpu
