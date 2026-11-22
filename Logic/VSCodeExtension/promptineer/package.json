@@ -9,16 +9,36 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:promptineer.openChat"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "promptineer.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "promptineer.openChat",
+        "title": "Open Chat"
       }
-    ]
+    ],
+
+    
+    "configuration": {
+      "title": "Promptineer",
+      "properties": {
+        "promptineer.apiUrl": {
+          "type": "string",
+          "default": "https://example.com/api/chat",
+          "description": "Endpoint that receives { \"message\": string } as JSON."
+        }
+      }
+    }
   },
+
+  
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",

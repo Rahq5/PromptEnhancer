@@ -2,6 +2,22 @@
 
 This is the README for your extension "promptineer". After writing up a brief description, we recommend including the following sections.
 
+## Edits
+
+### Edit API URL
+1. press F5 on promptineer/
+2. in the appeared window click `ctrl+,`
+3. search "promptineer.apiUrl"
+4. add your api url
+
+### Edit request (what you send)
+1. go to `promptineer/src/extinsion.ts`
+2. follow comments there
+
+### Edit Response (what you receive)
+1. go to `promptineer/src/extinsion.ts`
+2. follow comments there
+
 ## Features
 
 Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.

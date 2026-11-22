@@ -1,26 +1,79 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { ChatPanel } from './chatPanel';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+  const sendToApi = async (text: string): Promise<string> => {
+    const url = vscode.workspace
+      .getConfiguration('promptineer')
+      .get<string>('apiUrl');
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "promptineer" is now active!');
+    if (!url) {
+      throw new Error('Set "promptineer.apiUrl" in Settings first.');
+    }
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('promptineer.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Promptineer!');
-	});
 
-	context.subscriptions.push(disposable);
+// edit request: if your API has other json shape , change this line
+// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text }) // <<<<<<<<<<<<<
+    });
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/*
+example on edit request:
+
+//OpenAI-style example:
+
+body: JSON.stringify({
+  model: 'gpt-4o-mini',
+  messages: [{ role: 'user', content: text }]
+})
+
+*/
+    if (!response.ok) {
+      throw new Error('API returned HTTP ' + response.status);
+    }
+
+
+
+
+// edit response: the api should respond with this expected body
+// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+    const data = await response.json() as {
+      reply?: string; response?: string; text?: string;
+    };
+
+    return data.reply ?? data.response ?? data.text ?? JSON.stringify(data);
+  };
+
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/*
+example on edit response
+
+// API returns { answer: "..." }
+const data = await response.json() as { answer: string };
+return data.answer;
+
+// API returns OpenAI-style { choices: [{ message: { content: "..." } }] }
+const data = await response.json() as {
+  choices: { message: { content: string } }[];
+};
+return data.choices[0].message.content;
+
+// API returns plain text, not JSON — replace both lines with:
+return await response.text();
+
+*/
+
+  const openChat = vscode.commands.registerCommand(
+    'promptineer.openChat',
+    () => ChatPanel.show(sendToApi)
+  );
+
+  context.subscriptions.push(openChat);
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}
